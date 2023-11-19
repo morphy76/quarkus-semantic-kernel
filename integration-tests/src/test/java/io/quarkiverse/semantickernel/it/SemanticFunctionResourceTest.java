@@ -5,9 +5,12 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
 
+import io.quarkiverse.mockserver.test.MockServerTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@QuarkusTestResource(MockServerTestResource.class)
 public class SemanticFunctionResourceTest {
 
     @Test
@@ -16,7 +19,7 @@ public class SemanticFunctionResourceTest {
                 .when().get("/semantic-function/summarize")
                 .then()
                 .statusCode(200)
-                .body(is("Summarize completed"));
+                .body(is("The 2020 World Series was played in Texas at Globe Life Field in Arlington."));
     }
 
     @Test

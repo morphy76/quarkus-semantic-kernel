@@ -27,6 +27,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 import com.microsoft.semantickernel.Kernel;
+import com.microsoft.semantickernel.orchestration.SKContext;
 import com.microsoft.semantickernel.textcompletion.CompletionSKFunction;
 
 import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunction;
@@ -65,11 +66,9 @@ public class SemanticFunctionResource {
     @Path("/summarize")
     public String summarize() {
 
-        // SKContext ctx = kernel.runAsync(textToSummarize, summarizeFunction).block();
-        // LOGGER.info("Summary:");
-        // LOGGER.info(ctx.getResult());
+        SKContext ctx = kernel.runAsync(textToSummarize, summarizeFunction).block();
 
-        return "Summarize completed";
+        return ctx.getResult();
     }
 
     @GET

@@ -11,6 +11,7 @@
   <name>Quarkus Semantic Kernel - Integration Tests</name>
   <properties>
     <skipITs>true</skipITs>
+    <quarkus-mockserver-test.version>1.2.0</quarkus-mockserver-test.version>
   </properties>
   <dependencies>
     <dependency>
@@ -31,6 +32,12 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.quarkiverse.mockserver</groupId>
+        <artifactId>quarkus-mockserver-test</artifactId>
+        <version>${quarkus-mockserver-test.version}</version>
+        <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

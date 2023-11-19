@@ -14,6 +14,9 @@ import com.microsoft.semantickernel.connectors.ai.openai.util.OpenAIClientProvid
 import com.microsoft.semantickernel.connectors.ai.openai.util.OpenAISettings;
 import com.microsoft.semantickernel.exceptions.ConfigurationException;
 
+import io.quarkiverse.semantickernel.SemanticKernelConfiguration.ClientConfig;
+import io.quarkiverse.semantickernel.SemanticKernelConfiguration.OpenAIConfig;
+
 public class SemanticKernelClientProducer {
 
     @Inject
@@ -32,27 +35,30 @@ public class SemanticKernelClientProducer {
             if (semanticKernelConfiguration.client().get().openai().isPresent()) {
                 // TBV Just quick and dirty hacks which need to be properly engineered
                 Properties properties = new Properties();
-                properties.put(OpenAISettings.getDefaultSettingsPrefix() + OpenAISettings.getKeySuffix(),
+                properties.put(OpenAISettings.getDefaultSettingsPrefix() + "." + OpenAISettings.getKeySuffix(),
                         semanticKernelConfiguration.client().flatMap(client -> client.openai().map(openai -> openai.key()))
                                 .orElse(""));
-                properties.put(OpenAISettings.getDefaultSettingsPrefix() + OpenAISettings.getOpenAiOrganizationSuffix(),
+                properties.put(OpenAISettings.getDefaultSettingsPrefix() + "." + OpenAISettings.getOpenAiOrganizationSuffix(),
                         semanticKernelConfiguration.client()
                                 .flatMap(client -> client.openai().map(openai -> openai.organizationid())).orElse(""));
+                semanticKernelConfiguration.client().flatMap(ClientConfig::openai).flatMap(OpenAIConfig::overrideUrl)
+                        .ifPresent(url -> properties.put(OpenAISettings.getDefaultSettingsPrefix() + ".endpoint", url));
                 return new OpenAIClientProvider((Map) properties, ClientType.OPEN_AI).getAsyncClient();
             } else {
                 // AZURE OPEN AI
                 if (semanticKernelConfiguration.client().get().azureopenai().isPresent()) {
                     Properties properties = new Properties();
-                    properties.put(AzureOpenAISettings.getDefaultSettingsPrefix() + AzureOpenAISettings.getKeySuffix(),
+                    properties.put(AzureOpenAISettings.getDefaultSettingsPrefix() + "." + AzureOpenAISettings.getKeySuffix(),
                             semanticKernelConfiguration.client()
                                     .flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.key())));
                     properties.put(
-                            AzureOpenAISettings.getDefaultSettingsPrefix() + AzureOpenAISettings.getAzureOpenAiEndpointSuffix(),
+                            AzureOpenAISettings.getDefaultSettingsPrefix() + "."
+                                    + AzureOpenAISettings.getAzureOpenAiEndpointSuffix(),
                             semanticKernelConfiguration.client()
                                     .flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.endpoint())));
                     properties.put(
                             AzureOpenAISettings.getDefaultSettingsPrefix()
-                                    + AzureOpenAISettings.getAzureOpenAiDeploymentNameSuffix(),
+                                    + "." + AzureOpenAISettings.getAzureOpenAiDeploymentNameSuffix(),
                             semanticKernelConfiguration.client()
                                     .flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.deploymentname())));
                     return new OpenAIClientProvider((Map) properties, ClientType.AZURE_OPEN_AI).getAsyncClient();

@@ -43,6 +43,11 @@ public interface SemanticKernelConfiguration {
          * OpenAI organization ID
          */
         String organizationid();
+
+        /**
+         * Override the OpenAI endpoint URL
+         */
+        Optional<String> overrideUrl();
     }
 
     interface AzureOpenAIConfig {
