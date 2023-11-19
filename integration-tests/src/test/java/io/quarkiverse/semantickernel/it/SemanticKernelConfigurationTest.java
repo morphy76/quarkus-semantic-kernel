@@ -34,10 +34,10 @@ public class SemanticKernelConfigurationTest {
             assertEquals(Optional.of("OPEN_AI_ORGANIZATION_ID"),
                     configuration.client().flatMap(client -> client.openai().map(openai -> openai.organizationid())));
             assertEquals(Optional.of("AZURE_OPEN_AI_KEY"),
-                    configuration.client().flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.endpoint())));
+                    configuration.client().flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.key())));
             assertEquals(Optional.of("AZURE_OPEN_AI_DEPLOYMENT_NAME"), configuration.client()
                     .flatMap(client -> client.azureopenai().map(azureopenai -> azureopenai.deploymentname())));
-            assertTrue(configuration.client().flatMap(client -> client.openai()).flatMap(openai -> openai.overrideUrl())
+            assertTrue(configuration.client().flatMap(client -> client.openai()).flatMap(openai -> openai.overrideEndpoint())
                     .isPresent());
             assertTrue(configuration.client().flatMap(client -> client.azureopenai()).map(azureopenai -> azureopenai.endpoint())
                     .isPresent());

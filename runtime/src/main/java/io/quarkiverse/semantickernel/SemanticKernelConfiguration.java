@@ -47,7 +47,7 @@ public interface SemanticKernelConfiguration {
         /**
          * Override the OpenAI endpoint URL
          */
-        Optional<String> overrideUrl();
+        Optional<String> overrideEndpoint();
     }
 
     interface AzureOpenAIConfig {
