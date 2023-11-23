@@ -27,8 +27,6 @@ import com.microsoft.semantickernel.connectors.ai.openai.util.OpenAIClientProvid
 import com.microsoft.semantickernel.connectors.ai.openai.util.OpenAISettings;
 import com.microsoft.semantickernel.exceptions.ConfigurationException;
 
-import io.quarkiverse.semantickernel.SemanticKernelConfiguration.ClientConfig;
-import io.quarkiverse.semantickernel.SemanticKernelConfiguration.OpenAIConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
@@ -57,9 +55,7 @@ public class SemanticKernelClientProducer {
                 properties.put(OpenAISettings.getDefaultSettingsPrefix() + "." + OpenAISettings.getOpenAiOrganizationSuffix(),
                         semanticKernelConfiguration.client()
                                 .flatMap(client -> client.openai().map(openai -> openai.organizationid())).orElse(""));
-                semanticKernelConfiguration.client().flatMap(ClientConfig::openai).flatMap(OpenAIConfig::overrideEndpoint)
-                        .ifPresent(url -> properties.put(OpenAISettings.getDefaultSettingsPrefix() + ".endpoint", url));
-                return buildOpenAIClient((Map) properties);
+                return new OpenAIClientProvider((Map) properties, ClientType.OPEN_AI).getAsyncClient();
             } else {
                 // AZURE OPEN AI
                 if (semanticKernelConfiguration.client().get().azureopenai().isPresent()) {

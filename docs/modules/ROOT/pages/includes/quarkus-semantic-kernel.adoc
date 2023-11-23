@@ -49,23 +49,6 @@ endif::add-copy-button-to-env-var[]
 |required icon:exclamation-circle[title=Configuration property is required]
 
 
-a| [[quarkus-semantic-kernel_quarkus.semantic-kernel.client.openai.override-endpoint]]`link:#quarkus-semantic-kernel_quarkus.semantic-kernel.client.openai.override-endpoint[quarkus.semantic-kernel.client.openai.override-endpoint]`
-
-
-[.description]
---
-Override the OpenAI endpoint URL
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_SEMANTIC_KERNEL_CLIENT_OPENAI_OVERRIDE_ENDPOINT+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_SEMANTIC_KERNEL_CLIENT_OPENAI_OVERRIDE_ENDPOINT+++`
-endif::add-copy-button-to-env-var[]
---|string 
-|
-
-
 h|[[quarkus-semantic-kernel_quarkus.semantic-kernel.client.azureopenai-configuration-properties-for-the-azure-openai-client]]link:#quarkus-semantic-kernel_quarkus.semantic-kernel.client.azureopenai-configuration-properties-for-the-azure-openai-client[Configuration properties for the Azure OpenAI client]
 This configuration section is optional
 h|Type

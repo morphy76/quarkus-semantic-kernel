@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.quarkiverse.semantickernel</groupId>
@@ -34,10 +35,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>io.quarkiverse.mockserver</groupId>
-        <artifactId>quarkus-mockserver-test</artifactId>
-        <version>${quarkus-mockserver-test.version}</version>
-        <scope>test</scope>
+      <groupId>io.quarkiverse.mockserver</groupId>
+      <artifactId>quarkus-mockserver-test</artifactId>
+      <version>${quarkus-mockserver-test.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -74,34 +75,34 @@
     </plugins>
   </build>
   <profiles>
-<!--
+    <!--
 TODO The native profile has been removed because it fails with an issue with signed JARs that is described here:
 https://github.com/quarkusio/quarkus/issues/35906
 
 Semantic Kernel is not ready for native compilation anyway, so this profile is not needed for now.
 
 -->
-<!--    <profile>-->
-<!--      <id>native-image</id>-->
-<!--      <activation>-->
-<!--        <property>-->
-<!--          <name>native</name>-->
-<!--        </property>-->
-<!--      </activation>-->
-<!--      <build>-->
-<!--        <plugins>-->
-<!--          <plugin>-->
-<!--            <artifactId>maven-surefire-plugin</artifactId>-->
-<!--            <configuration>-->
-<!--              <skipTests>${native.surefire.skip}</skipTests>-->
-<!--            </configuration>-->
-<!--          </plugin>-->
-<!--        </plugins>-->
-<!--      </build>-->
-<!--      <properties>-->
-<!--        <skipITs>false</skipITs>-->
-<!--        <quarkus.package.type>native</quarkus.package.type>-->
-<!--      </properties>-->
-<!--    </profile>-->
+    <!--    <profile>-->
+    <!--      <id>native-image</id>-->
+    <!--      <activation>-->
+    <!--        <property>-->
+    <!--          <name>native</name>-->
+    <!--        </property>-->
+    <!--      </activation>-->
+    <!--      <build>-->
+    <!--        <plugins>-->
+    <!--          <plugin>-->
+    <!--            <artifactId>maven-surefire-plugin</artifactId>-->
+    <!--            <configuration>-->
+    <!--              <skipTests>${native.surefire.skip}</skipTests>-->
+    <!--            </configuration>-->
+    <!--          </plugin>-->
+    <!--        </plugins>-->
+    <!--      </build>-->
+    <!--      <properties>-->
+    <!--        <skipITs>false</skipITs>-->
+    <!--        <quarkus.package.type>native</quarkus.package.type>-->
+    <!--      </properties>-->
+    <!--    </profile>-->
   </profiles>
 </project>
