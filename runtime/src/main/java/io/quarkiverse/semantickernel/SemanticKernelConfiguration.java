@@ -1,7 +1,10 @@
 package io.quarkiverse.semantickernel;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import io.quarkiverse.semantickernel.SemanticKernelConfiguration.KernelConfig.ClientConfig;
 import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunctionConfiguration;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
@@ -17,48 +20,78 @@ public interface SemanticKernelConfiguration {
     Optional<ClientConfig> client();
 
     /**
-     * Configuration of semantic functions.
+     * Preload the kernel with semantic functions.
      */
-    Optional<SemanticFunctionConfiguration> semanticFunction();
+    Optional<SemanticFunctionLibrary> semanticFunctions();
 
-    interface ClientConfig {
-        /**
-         * Configuration properties for the OpenAI client
-         */
-        Optional<OpenAIConfig> openai();
+    /**
+     * Named kernels.
+     */
+    Map<String, KernelConfig> kernels();
+
+    /**
+     * Semantic function library by configuration.
+     */
+    Optional<SemanticFunctionConfiguration> semanticFunctionLibrary();
+
+    interface KernelConfig {
 
         /**
-         * Configuration properties for the Azure OpenAI client
+         * Preload the kernel with semantic functions.
          */
-        Optional<AzureOpenAIConfig> azureopenai();
+        Optional<SemanticFunctionLibrary> semanticFunctions();
+
+        interface ClientConfig {
+            /**
+             * Configuration properties for the OpenAI client
+             */
+            Optional<OpenAIConfig> openai();
+
+            /**
+             * Configuration properties for the Azure OpenAI client
+             */
+            Optional<AzureOpenAIConfig> azureopenai();
+        }
+
+        interface OpenAIConfig {
+            /**
+             * OpenAI API key
+             */
+            String key();
+
+            /**
+             * OpenAI organization ID
+             */
+            String organizationid();
+        }
+
+        interface AzureOpenAIConfig {
+            /**
+             * Azure OpenAI endpoint URL
+             */
+            String endpoint();
+
+            /**
+             * Azure OpenAI endpoint key
+             */
+            String key();
+
+            /**
+             * Azure OpenAI deployment name
+             */
+            String deploymentname();
+        }
     }
 
-    interface OpenAIConfig {
+    interface SemanticFunctionLibrary {
         /**
-         * OpenAI API key
+         * Lookup for packaged skills
          */
-        String key();
+        Optional<String> fromDirectory();
 
         /**
-         * OpenAI organization ID
+         * Bind all the semantic functions matching the given tags.
          */
-        String organizationid();
-    }
-
-    interface AzureOpenAIConfig {
-        /**
-         * Azure OpenAI endpoint URL
-         */
-        String endpoint();
-
-        /**
-         * Azure OpenAI endpoint key
-         */
-        String key();
-
-        /**
-         * Azure OpenAI deployment name
-         */
-        String deploymentname();
+        Optional<List<String>> fromConfiguration();
     }
 }

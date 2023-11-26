@@ -1,26 +1,19 @@
 package io.quarkiverse.semantickernel.semanticfunctions;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
 
-import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.SKBuilders;
 import com.microsoft.semantickernel.exceptions.SkillsNotFoundException;
-import com.microsoft.semantickernel.orchestration.SKFunction;
 import com.microsoft.semantickernel.semanticfunctions.PromptTemplate;
 import com.microsoft.semantickernel.semanticfunctions.PromptTemplateConfig;
 import com.microsoft.semantickernel.semanticfunctions.PromptTemplateConfig.CompletionConfig;
 import com.microsoft.semantickernel.semanticfunctions.PromptTemplateConfig.CompletionConfigBuilder;
 import com.microsoft.semantickernel.semanticfunctions.SemanticFunctionConfig;
 import com.microsoft.semantickernel.skilldefinition.FunctionNotFound;
-import com.microsoft.semantickernel.textcompletion.CompletionRequestSettings;
-import com.microsoft.semantickernel.textcompletion.CompletionSKFunction;
 
 import io.quarkiverse.semantickernel.SemanticKernelConfiguration;
 import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunctionConfiguration.Skill;
@@ -29,26 +22,15 @@ import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunctionConfigura
 public class SemanticFunctionProducer {
 
     @Inject
-    Kernel kernel;
-    @Inject
     SemanticKernelConfiguration configuration;
 
     @Produces
     @SemanticFunction
-    public CompletionSKFunction buildFunction(InjectionPoint ip) {
+    public SemanticFunctionConfig buildFunction(InjectionPoint ip) {
         String skillName = getSkillName(ip);
         String functionName = getFunctionName(ip);
 
-        if (isKnownSemanticFunction(skillName, functionName)) {
-            return kernel.getSkill(skillName).getFunction(functionName, CompletionSKFunction.class);
-        } else {
-            Optional<CompletionSKFunction> rv = loadFromDirectory(skillName, functionName);
-            if (rv.isPresent()) {
-                return rv.get();
-            } else {
-                return loadFromConfigurations(skillName, functionName);
-            }
-        }
+        return loadFromConfigurations(skillName, functionName);
     }
 
     private String getSkillName(InjectionPoint ip) {
@@ -61,28 +43,7 @@ public class SemanticFunctionProducer {
         return rv != null && !rv.isBlank() ? rv : "default";
     }
 
-    private Optional<CompletionSKFunction> loadFromDirectory(String skillName, String functionName) {
-        Optional<String> directory = configuration.semanticFunction().flatMap(SemanticFunctionConfiguration::fromDirectory);
-        if (directory.isPresent() && Files.exists(Path.of(directory.get(), skillName))) {
-            kernel.importSkillsFromDirectory(directory.get(), skillName);
-            boolean knownFunction = isKnownSemanticFunction(skillName, functionName);
-            return knownFunction
-                    ? Optional.of(kernel.getSkill(skillName).getFunction(functionName, CompletionSKFunction.class))
-                    : Optional.empty();
-        }
-        return Optional.empty();
-    }
-
-    private boolean isKnownSemanticFunction(String skillName, String functionName) {
-        Predicate<SKFunction<?>> knownCompletionPredicate = f -> {
-            return f.getName().equals(functionName)
-                    && CompletionRequestSettings.class.equals(f.getType());
-        };
-        return kernel.getSkills().asMap().containsKey(skillName)
-                && kernel.getSkill(skillName).getAll().stream().anyMatch(knownCompletionPredicate);
-    }
-
-    private CompletionSKFunction loadFromConfigurations(String skillName, String functionName) {
+    private SemanticFunctionConfig loadFromConfigurations(String skillName, String functionName) {
         Skill skillConfiguration = lookupForSkill(skillName);
         Function functionConfiguration = lookupForFunction(functionName, skillConfiguration);
 
@@ -94,9 +55,7 @@ public class SemanticFunctionProducer {
                 .withPromptTemplateConfig(tplConfig)
                 .withPromptTemplateEngine(SKBuilders.promptTemplateEngine().build()).build();
 
-        SemanticFunctionConfig semanticFConfig = new SemanticFunctionConfig(tplConfig, promptTemplate);
-
-        return kernel.registerSemanticFunction(skillName, functionName, semanticFConfig);
+        return new SemanticFunctionConfig(tplConfig, promptTemplate);
     }
 
     private Function lookupForFunction(String functionName, Skill skillConfiguration) {
@@ -107,7 +66,7 @@ public class SemanticFunctionProducer {
     }
 
     private Skill lookupForSkill(String skillName) {
-        return configuration.semanticFunction()
+        return configuration.semanticFunctionLibrary()
                 .map(SemanticFunctionConfiguration::skills)
                 .flatMap(skill -> Optional.ofNullable(skill.get(skillName)))
                 .orElseThrow(() -> new SkillsNotFoundException(

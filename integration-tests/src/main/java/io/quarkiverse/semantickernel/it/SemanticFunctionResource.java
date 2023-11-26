@@ -26,8 +26,16 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.azure.ai.openai.OpenAIAsyncClient;
 import com.microsoft.semantickernel.Kernel;
+import com.microsoft.semantickernel.SKBuilders;
+import com.microsoft.semantickernel.orchestration.SKContext;
+import com.microsoft.semantickernel.semanticfunctions.SemanticFunctionConfig;
 import com.microsoft.semantickernel.textcompletion.CompletionSKFunction;
+import com.microsoft.semantickernel.textcompletion.TextCompletion;
 
 import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunction;
 
@@ -35,21 +43,15 @@ import io.quarkiverse.semantickernel.semanticfunctions.SemanticFunction;
 @ApplicationScoped
 public class SemanticFunctionResource {
 
-    // private static final Logger LOGGER = LoggerFactory.getLogger(SemanticFunctionResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SemanticFunctionResource.class);
 
     @Inject
-    Kernel kernel;
+    OpenAIAsyncClient client;
 
     @Inject
     // This semantic function comes from application properties
     @SemanticFunction(skill = "TestSkill", function = "TestFunction")
-    CompletionSKFunction summarizeFunction;
-
-    // @Inject
-    // This semantic function has been loaded from a directory
-    // -Dquarkus.semantic-kernel.semantic-function.from-directory=<project_root>/quarkus-semantic-kernel/integration-tests/src/test/resources/skills
-    // @SemanticFunction(skill = "FunSkill", function = "Joke")
-    // CompletionSKFunction jokeFunction;
+    SemanticFunctionConfig summarizeFunction;
 
     String textToSummarize = null;
 
@@ -65,25 +67,16 @@ public class SemanticFunctionResource {
     @Path("/summarize")
     public String summarize() {
 
-        // SKContext ctx = kernel.runAsync(textToSummarize, summarizeFunction).block();
-        // LOGGER.info("Summary:");
-        // LOGGER.info(ctx.getResult());
+        TextCompletion textCompletion = SKBuilders.chatCompletion().withOpenAIClient(client).withModelId("gpt-3.5-turbo")
+                .build();
+        Kernel kernel = SKBuilders.kernel().withDefaultAIService(textCompletion).build();
+
+        CompletionSKFunction skFunction = kernel.registerSemanticFunction("TestSkill", "TestFunction", summarizeFunction);
+        SKContext ctx = kernel.runAsync(textToSummarize, skFunction).block();
+
+        LOGGER.info("Summary:");
+        LOGGER.info(ctx.getResult());
 
         return "Summarize completed";
-    }
-
-    @GET
-    @Path("/joke")
-    public String joke() {
-
-        // ContextVariables variables = ContextVariables.builder()
-        //         .withInput("A joke about software engineers")
-        //         .withVariable("audience_type", "non technicians")
-        //         .build();
-        // SKContext ctx = kernel.runAsync(variables, jokeFunction).block();
-        // LOGGER.info("Joke:");
-        // LOGGER.info(ctx.getResult());
-
-        return "Joke produced";
     }
 }

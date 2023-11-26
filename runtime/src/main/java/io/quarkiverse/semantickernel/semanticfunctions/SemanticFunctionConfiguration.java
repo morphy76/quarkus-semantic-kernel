@@ -14,11 +14,6 @@ public interface SemanticFunctionConfiguration {
      */
     Map<String, Skill> skills();
 
-    /**
-     * Lookup for packaged skills
-     */
-    Optional<String> fromDirectory();
-
     interface Skill {
 
         /**
@@ -32,6 +27,11 @@ public interface SemanticFunctionConfiguration {
              * Prompt of the semantic function.
              */
             String prompt();
+
+            /**
+             * Semantic functions taks for kernel binding.
+             */
+            List<String> tags();
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on

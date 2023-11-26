@@ -18,13 +18,4 @@ public class SemanticFunctionResourceTest {
                 .statusCode(200)
                 .body(is("Summarize completed"));
     }
-
-    @Test
-    public void testJokeGeneration() {
-        given()
-                .when().get("/semantic-function/joke")
-                .then()
-                .statusCode(200)
-                .body(is("Joke produced"));
-    }
 }
